@@ -12,6 +12,7 @@ class Company(Base):
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     surveys = relationship("Survey", back_populates="company")
+    hojas_de_vida = relationship("HojaDeVida", back_populates="company")
 
 class Survey(Base):
     __tablename__ = "surveys"
@@ -26,3 +27,20 @@ class Survey(Base):
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     company = relationship("Company", back_populates="surveys")
+
+class HojaDeVida(Base):
+    __tablename__ = "hojas_de_vida"
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id", ondelete="CASCADE"))
+    nombres = Column(String, nullable=False)
+    apellidos = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    telefono = Column(String, nullable=True)
+    direccion = Column(String, nullable=True)
+    resumen = Column(Text, nullable=True)
+    educacion = Column(JSONB, nullable=True)
+    experiencia = Column(JSONB, nullable=True)
+    habilidades = Column(JSONB, nullable=True)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
+    company = relationship("Company", back_populates="hojas_de_vida")

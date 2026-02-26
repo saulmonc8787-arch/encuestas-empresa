@@ -57,3 +57,22 @@ def create_survey(company_id: int, survey: schemas.SurveyCreate, db: Session = D
 def list_surveys(company_id: int, db: Session = Depends(get_db)):
     return crud.get_surveys_by_company(db, company_id)
 
+# Hojas de Vida
+@app.post("/companies/{company_id}/hojas-de-vida", response_model=schemas.HojaDeVidaOut, tags=["hojas-de-vida"])
+def create_hoja_de_vida(company_id: int, hoja: schemas.HojaDeVidaCreate, db: Session = Depends(get_db)):
+    company = crud.get_company(db, company_id)
+    if not company:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Company not found")
+    return crud.create_hoja_de_vida(db, company_id, hoja)
+
+@app.get("/companies/{company_id}/hojas-de-vida", response_model=list[schemas.HojaDeVidaOut], tags=["hojas-de-vida"])
+def list_hojas_de_vida(company_id: int, db: Session = Depends(get_db)):
+    return crud.get_hojas_de_vida_by_company(db, company_id)
+
+@app.get("/companies/{company_id}/hojas-de-vida/{hoja_id}", response_model=schemas.HojaDeVidaOut, tags=["hojas-de-vida"])
+def get_hoja_de_vida(company_id: int, hoja_id: int, db: Session = Depends(get_db)):
+    db_hoja = crud.get_hoja_de_vida(db, hoja_id)
+    if not db_hoja or db_hoja.company_id != company_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hoja de vida not found")
+    return db_hoja
+
